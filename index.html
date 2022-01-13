@@ -15,30 +15,21 @@
 
 </head>
 <body>
-    <div class="jumbotron">
-        <div class="mx-auto" style="width: 70em;" id ="jumbo">
-            <h1 class="mx-auto display-5" style="width: 200px;">Name</h1>
-            <hr class="my-4">
-            <p>It uses utility classes for typography and spacing to space content out within the larger container.</p>
-            <button type="button" class="btn btn-primary" id="record-btn">Record</button>
-            <br>
-          
-            <samp>Live Captions go here</samp>
+  <div class="container my-4">
+    <h1 class="text-center">Record Your Voice</h1>
+    
+    <hr class="my-4">
 
-        </div>
+    <div class="row record-button-container justify-content-md-center mt-5">
+      <button class="btn btn-light rounded-circle shadow-sm text-center" id="recordButton" style="padding: 20px 30px;">
+        <i class="fas fa-microphone fa-3x" style="color:black;"></i>
+      </button>
     </div>
 
-    <div class="container">
-        <h1 class="text-center">Record Your Voice</h1>
-        
-        <div class="row record-button-container justify-content-md-center mt-5">
-          <button class="btn btn-light rounded-circle shadow-sm text-center" id="recordButton" style="padding: 20px 30px;">
-            <i class="fas fa-microphone fa-3x" style="color:black;"></i>
-          </button>
-        </div>
+    <div class="row audio-container justify-content-md-center mt-5" id="audio">
+      
+    </div> 
+  </div>
 
-        <div class="row audio-container justify-content-md-center mt-5" id="audio">
-        </div>
-      </div>
 </body>
 </html>
