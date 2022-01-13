@@ -66,6 +66,14 @@ record.onclick = async function(event){
             document.getElementsByClassName('audio-container')[0].appendChild(audio);
         }
 
+
+        // reset audio player
+        for (audioPlayer of document.getElementsByClassName('audio-container')[0].children){
+            if (audioPlayer){
+                audioPlayer.pause();
+                audioPlayer.currentTime = 0;
+            }
+        }
         mediaRecorder.start();
     }
 
