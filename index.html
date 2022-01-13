@@ -11,7 +11,7 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
     <script src="https://kit.fontawesome.com/e15daeea70.js" crossorigin="anonymous"></script>
     
-    <script src="./app.js" onload></script>
+    <script src="./app.js" defer></script>
 
 </head>
 <body>
@@ -30,10 +30,15 @@
 
     <div class="container">
         <h1 class="text-center">Record Your Voice</h1>
-        <div class="record-button-container text-center mt-5">
+        
+        <div class="row record-button-container justify-content-md-center mt-5">
           <button class="btn btn-light rounded-circle shadow-sm text-center" id="recordButton" style="padding: 20px 30px;">
             <i class="fas fa-microphone fa-3x" style="color:black;"></i>
           </button>
+        </div>
+
+        <div class="row audio-container justify-content-md-center mt-5" id="audio">
+            <audio src=""></audio>
         </div>
       </div>
 </body>

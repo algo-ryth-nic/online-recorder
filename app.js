@@ -1,56 +1,74 @@
+// https://developer.mozilla.org/en-US/docs/Web/API/MediaRecorder
+// https://medium.com/@bryanjenningz/how-to-record-and-play-audio-in-javascript-faa1b2b3e49b
+// https://developers.google.com/web/fundamentals/media/recording-audio
 
-navigator.mediaDevices.getUserMedia( {audio: true, video: false} )
+//check if browser supports getUserMedia
+if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    alert(`Your browser does not support recording!\nMake sure you’re loading the website either on 
+    localhost or an HTTPS server even if you’re using a supported browser.`);
+}
+
+
+
+// Global constants
+const constraints = {audio: true, video: false};
+let audioChunks = [];
+
+let stream = null;
+let mediaRecorder = null;
+
+record = document.getElementById('recordButton');
+
+record.onclick = async function(event){
+    if (!stream){
+        stream = await navigator.mediaDevices.getUserMedia(constraints);
+    }
+
+    microphone_status = record.firstElementChild.style.color;
     
-    .then(function(stream) {
-
-        const mediaRecorder = new MediaRecorder(stream);
-        let audioChunks = [];
-
-        recordBtn = document.getElementById('record-btn');
+    // is recording
+    if(microphone_status == "red"){
+        document.getElementById("recordButton").firstElementChild.style.color = "black";
+        mediaRecorder.stop();            
+    }
+    
+    // not recording
+    else{
+        document.getElementById("recordButton").firstElementChild.style.color = "red";
         
-        recordBtn.onclick = function(){
-            // starts the recording
-            mediaRecorder.start();
-            console.log(mediaRecorder.state);
-            
-            recordBtn.style.background = "black";
-            recordBtn.style.color = "red";
-        }
+        mediaRecorder = new MediaRecorder(stream);
         
-
-        // event handler when media starts recording
-        mediaRecorder.addEventListener("start", event=>{
-            let stop = document.createElement('button');
-            stop.classList = 'btn btn-primary';
-            stop.type = 'button';
-            stop.textContent = "Stop";
-            document.getElementById('jumbo').appendChild(stop);
-
-            stop.onclick = (e) => {mediaRecorder.stop(); console.log(mediaRecorder.state);}
+        // event handling
+        // stores the audio chunks (bytes) in audioChunks. Dataavailable event is raise when .stop() is called.
+        mediaRecorder.addEventListener('dataavailable', function(event){
+            audioChunks.push(event.data);
         });
 
-
-        // saving the audio while recording
-        mediaRecorder.addEventListener("dataavailable", event=>{
-            audioChunks.push(event.data)
-        });
-
-        
-        // event handler when media recording is stopped
+        // event handling of 'stop'
         mediaRecorder.onstop = function(event){
+            console.log("making data available after MediaRecorder.stop() called.");
+
+            // when audio recording is stopped, save recording chunks in <audio> for playing 
             let audio = document.createElement('audio');
             audio.controls = true;
             
-            // creating a blob from chunks
-            const blob = new Blob(audioChunks, { type : 'audio/ogg; codecs=opus' });
+            // creating a single blob from the chunks
+            const blob = new Blob(audioChunks, {'type' : 'audio/ogg; codecs=opus'});
+            audioChunks = [];
+
+            // creating a object url for download and playing in player
             const audioURL = URL.createObjectURL(blob);
 
             audio.src = audioURL;
-            console.log("recorder stopped");
-            document.getElementById('jumbo').appendChild(audio);
+            audio.classList = "p-2";
+            audio.style.borderRadius = "5px";
+
+            document.getElementsByClassName('audio-container')[0].appendChild(audio);
         }
-    })
+
+        mediaRecorder.start();
+    }
+
+    console.log(mediaRecorder.state);
     
-    .catch( err => {
-        console.log(err);
-    });
+}
