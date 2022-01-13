@@ -13,7 +13,6 @@ if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
 // Global constants
 // const constraints = {, video: true};
 let audioChunks = [];
-let videoChunks = [];
 
 let stream = null;
 let mediaRecorder = null;
@@ -27,7 +26,7 @@ recordAudio.onclick = async function(event){
 
     // when stream is still active
     if(stream.active){
-        microphone_status = record.firstElementChild.style.color;
+        microphone_status = recordAudio.firstElementChild.style.color;
     
         // is recording
         if(microphone_status == "red"){
@@ -85,4 +84,65 @@ recordAudio.onclick = async function(event){
 }
 
 
+let videoStream = null;
+let videoChunks = [];
+
 // for video 
+recordVideo = document.getElementById('videoButton');
+recordVideo.onclick = async function(event){
+    if(!videoStream){
+        videoStream = await navigator.mediaDevices.getUserMedia({audio: true, video: true});
+    }
+
+    if(videoStream.active){
+        cameraBtnStatus = document.getElementById("videoButton").firstElementChild.style.color;
+
+        if(cameraBtnStatus == "green"){
+            document.getElementById("videoButton").firstElementChild.style.color = "black";
+            // pause the live video feed
+            let video = document.getElementById('live-feed');
+            video.pause();
+            mediaRecorder.stop();
+        }
+        else{
+            document.getElementById("videoButton").firstElementChild.style.color = "green";
+            
+            mediaRecorder = new MediaRecorder(videoStream);
+
+            mediaRecorder.ondataavailable = (e) =>{
+                videoChunks.push(e.data);
+            }
+
+            mediaRecorder.onstop = (e) =>{
+                // when video recording is stopped, save recording chunks in <video> for playing
+                let videoRecording = document.createElement('video');
+                
+                // creating a single blob from the chunks
+                const blob = new Blob(videoChunks, {'type' : 'video/webm'});
+                videoChunks = [];
+
+                // creating a object url for download and playing in player
+                const videoURL = URL.createObjectURL(blob);
+
+                videoRecording.src = videoURL;
+                videoRecording.classList = "p-2";
+                
+                videoRecording.controls = true;
+                videoRecording.width = "320";
+                videoRecording.height = "240";
+                document.getElementsByClassName('saved-video-container')[0].appendChild(videoRecording);
+            }
+
+            mediaRecorder.onstart = (e) =>{
+                // show live feed of video
+                let video = document.getElementById('live-feed');
+             
+                // src is the mediaStream object, which is getting data from webcam
+                video.srcObject = videoStream;
+                video.onloadedmetadata = (e) => video.play();
+            }
+
+            mediaRecorder.start();
+        }
+    }
+}  
